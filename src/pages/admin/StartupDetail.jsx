@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
-import { getStartup, patchStartup, regenerateKey } from '../../api/admin';
+import { createDashboardLink, getStartup, patchStartup, regenerateKey, revokeDashboardLink } from '../../api/admin';
 import CopyField from '../../components/CopyField';
+import DashboardLinkCard from '../../components/DashboardLinkCard';
+import StartupLoginsCard from '../../components/StartupLoginsCard';
 import { useToast } from '../../context/ToastContext';
 
 export default function StartupDetail() {
@@ -30,9 +32,25 @@ export default function StartupDetail() {
     },
   });
 
+  const linkCreateMutation = useMutation({
+    mutationFn: () => createDashboardLink(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['startup', id] });
+      showToast(data?.startup.dashboardLinkToken ? 'Link rotated — the old link no longer works' : 'Link created', 'success');
+    },
+  });
+
+  const linkRevokeMutation = useMutation({
+    mutationFn: () => revokeDashboardLink(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['startup', id] });
+      showToast('Link revoked', 'warning');
+    },
+  });
+
   if (isLoading) return <span className="loading loading-spinner" />;
 
-  const { startup, apiKey } = data;
+  const { startup, apiKey, users = [] } = data;
 
   return (
     <div className="max-w-2xl">
@@ -99,6 +117,19 @@ export default function StartupDetail() {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="mt-4">
+        <StartupLoginsCard startupId={id} users={users} />
+      </div>
+
+      <div className="mt-4">
+        <DashboardLinkCard
+          token={startup.dashboardLinkToken}
+          pending={linkCreateMutation.isPending || linkRevokeMutation.isPending}
+          onCreate={() => linkCreateMutation.mutate()}
+          onRevoke={() => linkRevokeMutation.mutate()}
+        />
       </div>
 
       {revealedKey && (

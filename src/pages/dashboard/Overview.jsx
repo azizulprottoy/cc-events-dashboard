@@ -2,8 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Line, LineChart, Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { getEventsOverTime, getOverview, getUserGrowth } from '../../api/dashboard';
 import StatCard from '../../components/StatCard';
+import { tooltipStyle, usePrimaryColor } from '../../theme';
 
 export default function Overview() {
+  const primary = usePrimaryColor();
   const { data: overview, isLoading: loadingOverview } = useQuery({
     queryKey: ['overview'],
     queryFn: () => getOverview(7),
@@ -61,8 +63,8 @@ export default function Overview() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                   <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2} dot={false} />
+                  <Tooltip {...tooltipStyle} />
+                  <Line type="monotone" dataKey="count" stroke={primary} strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -80,8 +82,8 @@ export default function Overview() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                   <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Bar dataKey="newUsers" fill="#22c55e" />
+                  <Tooltip {...tooltipStyle} cursor={false} />
+                  <Bar dataKey="newUsers" fill={primary} />
                 </BarChart>
               </ResponsiveContainer>
             )}
