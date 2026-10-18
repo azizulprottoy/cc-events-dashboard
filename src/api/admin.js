@@ -30,3 +30,11 @@ export const revokeDashboardLink = (id) => client.delete(`/admin/startups/${id}/
 
 export const resetStartupUserPassword = (id, userId, password) =>
   client.post(`/admin/startups/${id}/users/${userId}/reset-password`, password ? { password } : {}).then((r) => r.data);
+
+export const setDelivery = (id, webhookUrl) =>
+  client.put(`/admin/startups/${id}/delivery`, { webhookUrl }).then((r) => r.data);
+
+export const rotateDeliverySecret = (id) =>
+  client.post(`/admin/startups/${id}/delivery/rotate-secret`).then((r) => r.data);
+
+export const testDelivery = (id) => client.post(`/admin/startups/${id}/delivery/test`).then((r) => r.data);

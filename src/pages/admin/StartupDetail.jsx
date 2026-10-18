@@ -5,6 +5,7 @@ import { createDashboardLink, getStartup, patchStartup, regenerateKey, revokeDas
 import CopyField from '../../components/CopyField';
 import DashboardLinkCard from '../../components/DashboardLinkCard';
 import StartupLoginsCard from '../../components/StartupLoginsCard';
+import WebhookDeliveryCard from '../../components/WebhookDeliveryCard';
 import { useToast } from '../../context/ToastContext';
 
 export default function StartupDetail() {
@@ -50,7 +51,7 @@ export default function StartupDetail() {
 
   if (isLoading) return <span className="loading loading-spinner" />;
 
-  const { startup, apiKey, users = [] } = data;
+  const { startup, apiKey, users = [], delivery } = data;
 
   return (
     <div className="max-w-2xl">
@@ -130,6 +131,10 @@ export default function StartupDetail() {
           onCreate={() => linkCreateMutation.mutate()}
           onRevoke={() => linkRevokeMutation.mutate()}
         />
+      </div>
+
+      <div className="mt-4">
+        <WebhookDeliveryCard key={delivery?.webhookUrl || ''} startupId={id} delivery={delivery} />
       </div>
 
       {revealedKey && (
